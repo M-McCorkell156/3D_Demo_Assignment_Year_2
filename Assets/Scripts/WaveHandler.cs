@@ -11,8 +11,10 @@ public class WaveHandler : MonoBehaviour
     public List<Transform> spawnPos;
     public GameObject enemyPrefab;
 
-    public event EventHandler OnWaveChange;
-    private Enemy Enemy;
+    public delegate void EventHandler();
+    public static event EventHandler OnEnemyDeath;
+
+    public Enemy Enemy;
 
 
     // Start is called before the first frame update
@@ -21,7 +23,8 @@ public class WaveHandler : MonoBehaviour
         waveNo = 0;
         WaveChange();
 
-        //Enemy.OnEnemyDeath += Enemy_OnEnemyDeath;
+        Enemy.OnEnemyDeath += Enemy_OnEnemyDeath;
+
 
         //Debug.Log($"Start wave No:{waveNo} enemyNo: {enemyCount}");
     }
@@ -29,18 +32,19 @@ public class WaveHandler : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        WaveCheck();
     }
 
     //Check for remaining enemies
     public void WaveCheck()
     {
+        //Debug.Log("WaveCheck");
         if (enemyCount == 0)
         {
-            OnWaveChange(this, EventArgs.Empty);
+            //Debug.Log("no ene, next wave");
+            //OnWaveChange(this, EventArgs.Empty);
             WaveChange();
         }
-
     }
 
     //increase wave and calculate no of enemies
@@ -62,10 +66,12 @@ public class WaveHandler : MonoBehaviour
 
     }
 
-    //Method to call when enemy dies
-    private void Enemy_OnEnemyDeath(object sender, EventArgs e)
+    //Event method when enemy dies
+    private void Enemy_OnEnemyDeath()
     {
-        Debug.Log("event on enemy death");
+        //Debug.Log("event on enemy death");
         enemyCount--;
+        //Debug.Log($"ene count now : {enemyCount}");
+
     }
 }

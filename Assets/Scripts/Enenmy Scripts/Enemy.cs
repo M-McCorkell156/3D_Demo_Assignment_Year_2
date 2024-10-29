@@ -9,7 +9,11 @@ public class Enemy : MonoBehaviour
 {
     public GameObject playerObj;
     public NavMeshAgent agent;
-    public event EventHandler OnEnemyDeath;
+
+    public delegate void EventHandler();
+    public static event EventHandler OnEnemyDeath;
+
+    int[] numbers = { 1, 2, 3 };
 
 
     // Start is called before the first frame update
@@ -19,17 +23,32 @@ public class Enemy : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
     }
 
+
     // Update is called once per frame
     private void Update()
     {
-        agent.SetDestination(playerObj.transform.position);
+        //Testing
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Destroy(this.gameObject);
+            OnDeath();
+        }
     }
 
+    private void FixedUpdate()
+    {
+        agent.SetDestination(playerObj.transform.position);
+        transform.LookAt(playerObj.transform.position);
+    }
+
+    //When an enemy dies send event
     private void OnDeath()
     {
+        //Debug.Log("on  death");
+
         if (OnEnemyDeath != null)
         {
-            OnEnemyDeath(this, EventArgs.Empty);
+            OnEnemyDeath();
         }
     }
 
