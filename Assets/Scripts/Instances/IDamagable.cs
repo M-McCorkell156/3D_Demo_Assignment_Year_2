@@ -4,8 +4,8 @@ using UnityEngine;
 
 public interface IDamagable
 {
-    void Damage (float damage,float health);
+    void Damage (float damageTaken);
 
-    void Death (float health);  
+    void Death ();  
 
 }

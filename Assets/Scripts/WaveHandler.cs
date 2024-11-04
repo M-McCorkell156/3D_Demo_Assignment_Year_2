@@ -11,9 +11,6 @@ public class WaveHandler : MonoBehaviour
     public List<Transform> spawnPos;
     public GameObject enemyPrefab;
 
-    public delegate void EventHandler();
-    public static event EventHandler OnEnemyDeath;
-
     public Enemy Enemy;
 
 

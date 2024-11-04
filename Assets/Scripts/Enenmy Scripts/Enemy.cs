@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IDamagable
 {
     public GameObject playerObj;
     public NavMeshAgent agent;
@@ -15,6 +15,8 @@ public class Enemy : MonoBehaviour
 
     int[] numbers = { 1, 2, 3 };
 
+    private float myHealth = 100f;
+    private float playerDamage = 20f;
 
     // Start is called before the first frame update
     void Start()
@@ -27,48 +29,52 @@ public class Enemy : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        //Testing
+        /*
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Destroy(this.gameObject);
-            OnDeath();
+            //Testing next wave funcition 
+            //Destroy(this.gameObject);
+
+            //Testing taking damage 
+            Damage(playerDamage,myHealth);
         }
+        */
+
+
     }
 
     private void FixedUpdate()
     {
-        agent.SetDestination(playerObj.transform.position);
-        transform.LookAt(playerObj.transform.position);
+        //transform.LookAt(playerObj.transform.position);
+        //agent.SetDestination(playerObj.transform.position);
     }
 
-    //When an enemy dies send event
-    private void OnDeath()
+    #region Death
+    //When an enemy dies delete self and send event
+    public void Death()
     {
-        //Debug.Log("on  death");
-
+        //Debug.Log("1 enemy death");
+        Destroy(this.gameObject);
         if (OnEnemyDeath != null)
         {
             OnEnemyDeath();
         }
     }
+    #endregion
 
-    #region Observers 
-    private List<IObservers> observers = new List<IObservers>();
-    private void AddObservers(IObservers observer)
+    #region Damage
+    public void Damage(float damage)
     {
-        observers.Add(observer);
-    }
+        //Debug.Log($"enemy took damage : {damage}");
 
-    private void RemoveObservers(IObservers observer)
-    {
-        observers.Remove(observer);
-    }
-    private void NotifyObservers()
-    {
-        observers.ForEach((observer) =>
+        myHealth -= damage;
+
+       Debug.Log($"enemy health remaining : {myHealth}");
+
+        if (myHealth <= 0)
         {
-            observer.NotifyObservers();
-        });
+            Death();
+        }
     }
     #endregion
 }
