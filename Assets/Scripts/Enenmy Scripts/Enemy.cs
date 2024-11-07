@@ -69,7 +69,7 @@ public class Enemy : MonoBehaviour, IDamagable
 
         myHealth -= damage;
 
-       Debug.Log($"enemy health remaining : {myHealth}");
+       //Debug.Log($"enemy health remaining : {myHealth}");
 
         if (myHealth <= 0)
         {

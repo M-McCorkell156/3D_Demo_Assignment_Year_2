@@ -8,6 +8,7 @@ public class Shoot : MonoBehaviour
     public float range = 200f;
     
     public Camera Camera;
+    private  AudioEventSender_SFX gunshoot; 
 
     RaycastHit hit;
 
@@ -15,7 +16,7 @@ public class Shoot : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        gunshoot = GetComponent<AudioEventSender_SFX>();
     }
 
     // Update is called once per frame
@@ -29,10 +30,13 @@ public class Shoot : MonoBehaviour
 
     public void PlayerShoots()
     {
-        Debug.Log("Player shoots");
+        //Debug.Log("Player shoots");
+        Debug.DrawRay(transform.position, Camera.transform.forward, Color.green);
+        gunshoot.Play();
 
         if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out hit, range))
         {
+            Debug.DrawRay(transform.position, Camera.transform.forward, Color.green);
             //Debug.Log(hit.transform.name);
             Enemy target = hit.transform.GetComponent<Enemy>();
             if (target != null)
