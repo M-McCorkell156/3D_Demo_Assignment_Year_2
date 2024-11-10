@@ -45,8 +45,8 @@ public class Enemy : MonoBehaviour, IDamagable
 
     private void FixedUpdate()
     {
-        //transform.LookAt(playerObj.transform.position);
-        //agent.SetDestination(playerObj.transform.position);
+        transform.LookAt(playerObj.transform.position);
+        agent.SetDestination(playerObj.transform.position);
     }
 
     #region Death

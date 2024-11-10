@@ -30,13 +30,12 @@ public class Shoot : MonoBehaviour
 
     public void PlayerShoots()
     {
-        //Debug.Log("Player shoots");
-        Debug.DrawRay(transform.position, Camera.transform.forward, Color.green);
+        //Debug.Log("Player shoots");       
         gunshoot.Play();
 
         if (Physics.Raycast(Camera.transform.position, Camera.transform.forward, out hit, range))
         {
-            Debug.DrawRay(transform.position, Camera.transform.forward, Color.green);
+            
             //Debug.Log(hit.transform.name);
             Enemy target = hit.transform.GetComponent<Enemy>();
             if (target != null)

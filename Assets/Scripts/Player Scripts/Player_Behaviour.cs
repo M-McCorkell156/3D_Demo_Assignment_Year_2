@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player_Behaviour : MonoBehaviour, IDamagable
 {
@@ -34,10 +35,8 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
 
     public void Damage(float damage)
     {
-        Debug.Log($"player took damage : {damage}");
-
+        //Debug.Log($"player took damage : {damage}");
         myHealth -= damage;
-
         //Debug.Log($"player health remaining : {myHealth}");
 
         if (myHealth <= 0)
@@ -49,6 +48,7 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
     public void Death()
     {
         //Debug.Log("player dead");
-        //End Game
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
     }
 }

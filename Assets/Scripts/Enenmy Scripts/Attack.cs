@@ -19,17 +19,18 @@ public class Attack : MonoBehaviour
     void Update()
     {
         //Testing giving player damage 
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            AttackPlayer();
-        }
-
     }
 
     public void OnTriggerEnter(Collider other)
     {
-
+        //Debug.Log("trigger");
+        
+        if (other.tag == "Player")
+        {
+            //Debug.Log("hit player");
+            AttackPlayer();
+        }
+        
     }
 
     public void OnTriggerStay(Collider other)
