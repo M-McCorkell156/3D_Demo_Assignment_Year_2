@@ -54,7 +54,8 @@ public class Enemy : MonoBehaviour, IDamagable
     public void Death()
     {
         //Debug.Log("1 enemy death");
-        Destroy(this.gameObject);
+        //Destroy(this.gameObject);
+        Destroy(this.transform.parent.gameObject);
         if (OnEnemyDeath != null)
         {
             OnEnemyDeath();

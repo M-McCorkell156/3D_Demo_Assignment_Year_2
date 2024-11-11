@@ -52,7 +52,11 @@ public class AudioEventSender_BGM : MonoBehaviour, IAudioEventSender
     [Header("TestMode : 'M' to play music, 'N' to stop, 'B' to pause")]
     public bool testMode = false;
 
+    private WaveHandler WaveHandler;
+
     private void OnEnable(){
+
+        WaveHandler.OnWaveChange += WaveChangeTune; 
         if (playOnEnabled)
         {   
             //CHECK THE TIME THE GAME HAS BEEN RUNNING - The audiomanager will not be ready to play music until the start method has run
@@ -71,7 +75,12 @@ public class AudioEventSender_BGM : MonoBehaviour, IAudioEventSender
             Stop();
         }
     }
-    
+
+    private void WaveChangeTune()
+    {
+        Play();
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if (collisionType == CollisionType.Trigger && other.CompareTag(targetTag))

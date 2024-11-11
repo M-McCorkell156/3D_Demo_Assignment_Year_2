@@ -16,7 +16,7 @@ public class UIHandler : MonoBehaviour
     {
         WaveHandler.OnWaveChange += OnWaveChange;
         
-        counter = 0;
+        counter = 1;
         waveCounter.text = counter.ToString();
     }
 

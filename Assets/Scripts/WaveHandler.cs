@@ -14,7 +14,10 @@ public class WaveHandler : MonoBehaviour
     public delegate void EventHandler();
     public static event EventHandler OnWaveChange;
 
-    public Enemy Enemy;
+    private Enemy Enemy;
+
+    private AudioEventSender_BGM waveTune;
+
 
 
     // Start is called before the first frame update
@@ -24,6 +27,8 @@ public class WaveHandler : MonoBehaviour
         WaveChange();
 
         Enemy.OnEnemyDeath += OnEnemyDeath;
+
+        waveTune = GetComponent<AudioEventSender_BGM>();
 
 
         //Debug.Log($"Start wave No:{waveNo} enemyNo: {enemyCount}");
@@ -42,7 +47,6 @@ public class WaveHandler : MonoBehaviour
         if (enemyCount == 0)
         {
             //Debug.Log("no ene, next wave");
-    
             WaveChange();
         }
     }
@@ -50,32 +54,39 @@ public class WaveHandler : MonoBehaviour
     //increase wave and calculate no of enemies
     private void WaveChange()
     {
-        float spawnTime = 2.0f;
+
+        //waveTune.Play();
         //Debug.Log("WaveChange");
         if (OnWaveChange != null)
         {
             //Debug.Log("Call Wave Change event");
             OnWaveChange();
         }
-
         waveNo++;
         enemyCount = waveNo * (waveNo + 2) + 2;
-        //Debug.Log($"eneCount{enemyCount}");
 
+        Invoke("SpawnDelay", 8.0f);
+
+    }
+
+
+    private void SpawnDelay()
+    {
+        float spawnTime = 2.0f;
         for (int i = 0; i < enemyCount; i++)
         {
+            //Debug.Log($"Spawn for {i} : {spawnTime}");
             if (spawnPos != null)
-            {                
+            {
                 Invoke("Spawn", spawnTime);
-                spawnTime += 2; 
+                spawnTime++;
             }
         }
-
     }
 
     private void Spawn()
     {
-        int ranSpawnPos = UnityEngine.Random.Range(1, 4);
+        int ranSpawnPos = UnityEngine.Random.Range(0, 4);
         //Debug.Log($"Random no: {i} spawn: {ranSpawnPos}");
         Instantiate(enemyPrefab, spawnPos[ranSpawnPos].position, Quaternion.identity);
     }

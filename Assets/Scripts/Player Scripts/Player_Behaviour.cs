@@ -27,6 +27,11 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
         }
         */
     }
+
+    public void Regen()
+    {
+
+    }
     public void TakeDamage()
     {
 
