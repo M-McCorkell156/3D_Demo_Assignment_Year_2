@@ -45,10 +45,30 @@ public class Enemy : MonoBehaviour, IDamagable
 
     private void FixedUpdate()
     {
+        Chase();       
+        if (Vector3.Distance(playerObj.transform.position,this.transform.position) > 3)
+        {
+            Chase();
+        }
+        else
+        {
+            Invoke("AttackDelay", 2f);
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+            Debug.Log("Stop");
+        }
+    }
+    private void AttackDelay()
+    {
+        agent.isStopped = false;
+        Debug.Log("Go");
+
+    }
+    private void Chase()
+    {
         transform.LookAt(playerObj.transform.position);
         agent.SetDestination(playerObj.transform.position);
     }
-
     #region Death
     //When an enemy dies delete self and send event
     public void Death()

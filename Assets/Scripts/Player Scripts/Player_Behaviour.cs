@@ -5,8 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class Player_Behaviour : MonoBehaviour, IDamagable
 {
-    private float myHealth = 100f;
-    private float enemyDamage = 30f;
+    [SerializeField] private float myHealth = 100f;
+    private float maxHealth = 100f; 
+    [SerializeField] private float healthRegenLength = 2f;
+    [SerializeField] private float enemyDamage = 30f;
+    [SerializeField] private bool isRegen;
+    [SerializeField] private float healthRegenAmount = 10f;
+
 
     public Attack Attack;
 
@@ -26,11 +31,21 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
             Damage(enemyDamage,myHealth);
         }
         */
+        if (myHealth != maxHealth & !isRegen)
+        {
+           StartCoroutine(Regen());
+        }
     }
 
-    public void Regen()
+    private IEnumerator Regen()
     {
-
+        isRegen = true;
+        while (myHealth < maxHealth)
+        {
+            myHealth += 10f;
+            yield return new WaitForSeconds(healthRegenLength);
+        }
+        isRegen = false;
     }
     public void TakeDamage()
     {
