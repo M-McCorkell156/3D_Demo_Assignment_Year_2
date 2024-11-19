@@ -2,6 +2,8 @@ using StarterAssets;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -20,8 +22,10 @@ public class Enemy : MonoBehaviour, IDamagable
 
     [SerializeField] private float hitRange;
 
-    [SerializeField] private SkinnedMeshRenderer skinnedMesh;
-    public Material[] skinnedMaterials;
+    //[SerializeField] private Material skinnedMesh;
+    [SerializeField] private SkinnedMeshRenderer[] bodyParts;
+
+    [SerializeField] private Material[] skinnedMaterials;
 
     public float dissolveRate = 0.0125f;
     public float refreshRate = 0.025f;
@@ -32,17 +36,24 @@ public class Enemy : MonoBehaviour, IDamagable
         playerObj = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
 
-        if(skinnedMesh != null)
+        bodyParts = GetComponentsInChildren<SkinnedMeshRenderer>();
+
+        if (bodyParts != null)
         {
-            skinnedMaterials = skinnedMesh.materials;
+            //Debug.Log(bodyParts.Length);
+            for (int i = 0; i < bodyParts.Length; i++)
+            {
+                Debug.Log(i);
+                skinnedMaterials = bodyParts[i].materials;
+            }
         }
 
     }
 
     private void FixedUpdate()
     {
-        Chase();       
-        if (Vector3.Distance(playerObj.transform.position,this.transform.position) > hitRange)
+        Chase();
+        if (Vector3.Distance(playerObj.transform.position, this.transform.position) > hitRange)
         {
             Chase();
         }
@@ -72,7 +83,7 @@ public class Enemy : MonoBehaviour, IDamagable
     //When an enemy dies delete self and send event
     public void Death()
     {
-        Debug.Log("1 enemy death");
+        //Debug.Log("1 enemy death");
         //Destroy(this.gameObject);
         StartCoroutine(DissolveDeath());
         if (OnEnemyDeath != null)
@@ -83,15 +94,16 @@ public class Enemy : MonoBehaviour, IDamagable
 
     private IEnumerator DissolveDeath()
     {
-        if(skinnedMaterials.Length>0)
-        {
-            float counter = 0;  
-            while (skinnedMaterials[0].GetFloat("_DisolveAmount") <1)
-            { 
-                counter+= dissolveRate; 
-                for (int i=0; i<skinnedMaterials.Length; i++)
+        if (skinnedMaterials.Length > 0)
+        {         
+            //Debug.Log("each skin");
+            float counter = 0;
+            while (skinnedMaterials[0].GetFloat("_DisolveAmount") < 1)
+            {
+                counter += dissolveRate;
+                for (int i = 0; i < skinnedMaterials.Length; i++)
                 {
-                    skinnedMaterials[i].SetFloat("_DisolveAmount",counter);
+                    skinnedMaterials[i].SetFloat("_DisolveAmount", counter);
                 }
                 yield return new WaitForSeconds(refreshRate);
             }
@@ -101,7 +113,7 @@ public class Enemy : MonoBehaviour, IDamagable
 
     private void Destroy()
     {
-        
+        //Destroy(this.transform.parent.gameObject);
     }
     #endregion
 
@@ -112,7 +124,7 @@ public class Enemy : MonoBehaviour, IDamagable
 
         myHealth -= damage;
 
-       //Debug.Log($"enemy health remaining : {myHealth}");
+        //Debug.Log($"enemy health remaining : {myHealth}");
 
         if (myHealth <= 0)
         {
