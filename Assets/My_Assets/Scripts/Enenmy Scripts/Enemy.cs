@@ -3,9 +3,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.InputManagerEntry;
 
 public class Enemy : MonoBehaviour, IDamagable
 {
@@ -22,13 +24,19 @@ public class Enemy : MonoBehaviour, IDamagable
 
     [SerializeField] private float hitRange;
 
-    //[SerializeField] private Material skinnedMesh;
     [SerializeField] private SkinnedMeshRenderer[] bodyParts;
 
     [SerializeField] private Material[] skinnedMaterials;
+    [SerializeField] private List<Material> tempList;
+
+    private bool isDead;
+    private bool isSpawning;
+    private bool isAttacking;
 
     public float dissolveRate = 0.0125f;
     public float refreshRate = 0.025f;
+
+    [SerializeField] private GameObject DigPartEFX;
 
     // Start is called before the first frame update
     void Start()
@@ -38,27 +46,87 @@ public class Enemy : MonoBehaviour, IDamagable
 
         bodyParts = GetComponentsInChildren<SkinnedMeshRenderer>();
 
-        if (bodyParts != null)
+        skinnedMaterials = new Material[bodyParts.Length + 1];
+
+        tempList = new List<Material>(tempList.Count) { };
+
+        isDead = false;
+        isSpawning = true;
+        isAttacking = false;
+
+        //Debug.Log(bodyParts.Length);
+        //Debug.Log(skinnedMaterials.Length);
+
+        #region Skin Mesh Getter
+        if (bodyParts != null && skinnedMaterials != null)
         {
-            //Debug.Log(bodyParts.Length);
+            int count = 0;
+            //Debug.Log("bodyParts.Length");
             for (int i = 0; i < bodyParts.Length; i++)
             {
-                Debug.Log(i);
-                skinnedMaterials = bodyParts[i].materials;
+                //Debug.Log(bodyParts[i].gameObject.name);
+                //Index issue VVV
+                //skins = bodyParts[i].materials.ToList();
+
+                //Debug.Log(i);
+
+                //Missing Pelvis material VVV for loop???
+                if (bodyParts[i].gameObject.name == "Pelvis")
+                {
+                    //Debug.Log("This c###");
+                    tempList = bodyParts[i].materials.ToList();
+                    //Debug.Log(tempList.Count);
+                    //i++;
+                    for (int j = 0; j < tempList.Count; j++)
+                    {
+                        //Debug.Log(i);
+                        skinnedMaterials[i + j] = tempList[j];
+                        //Debug.Log($"Set {i} skin");
+                        count += j;
+                    }
+                }
+                else
+                {
+                    //Debug.Log("no c###");
+                    skinnedMaterials[i + count] = bodyParts[i].material;
+                }
+
             }
         }
+        #endregion
+
+        Spawning();
 
     }
 
+
     private void FixedUpdate()
     {
-        Chase();
+        //Chase();
+
         if (Vector3.Distance(playerObj.transform.position, this.transform.position) > hitRange)
         {
-            Chase();
+            isAttacking = true;
         }
         else
         {
+            isAttacking = false;
+        }
+
+        EnemyChecks();
+    }
+
+    private void EnemyChecks()
+    {
+        //Debug.Log("Check");
+        if (isAttacking && !isDead && !isSpawning)
+        {
+            //Debug.Log("Chase");
+            Chase();
+        }
+        else if (!isDead && !isSpawning)
+        {
+            //Debug.Log("Delay");
             Invoke("AttackDelay", 2f);
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
@@ -67,7 +135,23 @@ public class Enemy : MonoBehaviour, IDamagable
     }
     private void Spawning()
     {
+        /*
+        //Debug.Log("Spawning");
+        DigPartEFX.SetActive(true);
+        if(this.gameObject.transform.position.y < 0)
+        {
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x,0,transform.position.z) , 0.2f);
+        }
+        NavSetup();
+        */
+    }
 
+    private void NavSetup()
+    {
+        //Debug.Log("NavSetup");
+
+        agent = GetComponent<NavMeshAgent>();
+        isSpawning = false;
     }
     private void AttackDelay()
     {
@@ -76,16 +160,23 @@ public class Enemy : MonoBehaviour, IDamagable
     }
     private void Chase()
     {
+        //Debug.Log("chasing");
         transform.LookAt(playerObj.transform.position);
-        agent.SetDestination(playerObj.transform.position);
+        //agent.SetDestination(playerObj.transform.position);
     }
     #region Death
     //When an enemy dies delete self and send event
     public void Death()
     {
+        isDead = true;
         //Debug.Log("1 enemy death");
         //Destroy(this.gameObject);
         StartCoroutine(DissolveDeath());
+    }
+
+    private void Destroy()
+    {
+        Destroy(this.transform.parent.gameObject);
         if (OnEnemyDeath != null)
         {
             OnEnemyDeath();
@@ -95,8 +186,7 @@ public class Enemy : MonoBehaviour, IDamagable
     private IEnumerator DissolveDeath()
     {
         if (skinnedMaterials.Length > 0)
-        {         
-            //Debug.Log("each skin");
+        {
             float counter = 0;
             while (skinnedMaterials[0].GetFloat("_DisolveAmount") < 1)
             {
@@ -107,13 +197,8 @@ public class Enemy : MonoBehaviour, IDamagable
                 }
                 yield return new WaitForSeconds(refreshRate);
             }
+            Destroy();
         }
-        //Destroy(this.transform.parent.gameObject);
-    }
-
-    private void Destroy()
-    {
-        //Destroy(this.transform.parent.gameObject);
     }
     #endregion
 
@@ -126,7 +211,7 @@ public class Enemy : MonoBehaviour, IDamagable
 
         //Debug.Log($"enemy health remaining : {myHealth}");
 
-        if (myHealth <= 0)
+        if (myHealth <= 0 && !isDead)
         {
             Death();
         }

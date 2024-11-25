@@ -42,7 +42,7 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
         isRegen = true;
         while (myHealth < maxHealth)
         {
-            myHealth += 10f;
+            myHealth += healthRegenAmount;
             yield return new WaitForSeconds(healthRegenLength);
         }
         isRegen = false;
