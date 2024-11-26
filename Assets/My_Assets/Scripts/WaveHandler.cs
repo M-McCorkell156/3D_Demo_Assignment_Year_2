@@ -87,8 +87,14 @@ public class WaveHandler : MonoBehaviour
     private void Spawn()
     {
         int ranSpawnPos = UnityEngine.Random.Range(0, 4);
+        float ranSpawnDir = UnityEngine.Random.rotation.y;
+        Quaternion quaternion = Quaternion.identity;
+        quaternion.y = ranSpawnDir;
+
         //Debug.Log($"Random no: {i} spawn: {ranSpawnPos}");
-        Instantiate(enemyPrefab, spawnPos[ranSpawnPos].position, Quaternion.identity);
+        //Debug.Log($"Random dir {ranSpawnDir}");
+
+        Instantiate(enemyPrefab, spawnPos[ranSpawnPos].position, quaternion);
     }
 
 

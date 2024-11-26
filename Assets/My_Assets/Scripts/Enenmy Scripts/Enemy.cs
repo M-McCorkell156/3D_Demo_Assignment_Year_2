@@ -135,15 +135,22 @@ public class Enemy : MonoBehaviour, IDamagable
     }
     private void Spawning()
     {
-        /*
         //Debug.Log("Spawning");
         DigPartEFX.SetActive(true);
-        if(this.gameObject.transform.position.y < 0)
+      
+        StartCoroutine(SpawnRiseTime());
+
+    }
+    private IEnumerator SpawnRiseTime()
+    {
+        while (this.gameObject.transform.position.y < 1)
         {
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x,0,transform.position.z) , 0.2f);
+            //Debug.Log("Rise Start");
+            yield return new WaitForSeconds(0.008f);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, 1, transform.position.z), 0.008f);
         }
+        //Debug.Log("Done");
         NavSetup();
-        */
     }
 
     private void NavSetup()
@@ -151,6 +158,7 @@ public class Enemy : MonoBehaviour, IDamagable
         //Debug.Log("NavSetup");
 
         agent = GetComponent<NavMeshAgent>();
+        agent.enabled = true;
         isSpawning = false;
     }
     private void AttackDelay()
@@ -162,7 +170,7 @@ public class Enemy : MonoBehaviour, IDamagable
     {
         //Debug.Log("chasing");
         transform.LookAt(playerObj.transform.position);
-        //agent.SetDestination(playerObj.transform.position);
+        agent.SetDestination(playerObj.transform.position);
     }
     #region Death
     //When an enemy dies delete self and send event
