@@ -41,6 +41,10 @@ public class Enemy : MonoBehaviour, IDamagable
     // Start is called before the first frame update
     void Start()
     {
+
+        WaveHandler.OnWaveChange += OnWaveChange;
+        Debug.Log(myHealth);
+
         playerObj = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
 
@@ -156,7 +160,6 @@ public class Enemy : MonoBehaviour, IDamagable
     private void NavSetup()
     {
         //Debug.Log("NavSetup");
-
         agent = GetComponent<NavMeshAgent>();
         agent.enabled = true;
         isSpawning = false;
@@ -176,8 +179,10 @@ public class Enemy : MonoBehaviour, IDamagable
     //When an enemy dies delete self and send event
     public void Death()
     {
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
         isDead = true;
-        //Debug.Log("1 enemy death");
+        Debug.Log("1 enemy death");
         //Destroy(this.gameObject);
         StartCoroutine(DissolveDeath());
     }
@@ -225,4 +230,9 @@ public class Enemy : MonoBehaviour, IDamagable
         }
     }
     #endregion
+
+    private void OnWaveChange()
+    {
+        myHealth += 100;
+    }
 }
