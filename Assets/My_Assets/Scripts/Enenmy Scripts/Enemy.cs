@@ -38,12 +38,21 @@ public class Enemy : MonoBehaviour, IDamagable
 
     [SerializeField] private GameObject DigPartEFX;
 
+    [SerializeField] private GameObject waveHandlerObj;
+    [SerializeField] private WaveHandler waveHandler;
+    private float waveNo = 0.0f;
+
     // Start is called before the first frame update
     void Start()
     {
+        waveHandlerObj = GameObject.FindWithTag("WaveHandler");
+        waveHandler = waveHandlerObj.GetComponent<WaveHandler>();
 
-        WaveHandler.OnWaveChange += OnWaveChange;
-        Debug.Log(myHealth);
+        waveNo = waveHandler.WaveGetter();
+        //Debug.Log(waveNo);
+        myHealth = 90.0f + (waveNo * 10.0f);
+
+        //Debug.Log(myHealth);
 
         playerObj = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
@@ -141,7 +150,7 @@ public class Enemy : MonoBehaviour, IDamagable
     {
         //Debug.Log("Spawning");
         DigPartEFX.SetActive(true);
-      
+
         StartCoroutine(SpawnRiseTime());
 
     }
@@ -182,8 +191,7 @@ public class Enemy : MonoBehaviour, IDamagable
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
         isDead = true;
-        Debug.Log("1 enemy death");
-        //Destroy(this.gameObject);
+        //Debug.Log("1 enemy death");
         StartCoroutine(DissolveDeath());
     }
 
@@ -230,9 +238,4 @@ public class Enemy : MonoBehaviour, IDamagable
         }
     }
     #endregion
-
-    private void OnWaveChange()
-    {
-        myHealth += 100;
-    }
 }

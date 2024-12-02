@@ -6,6 +6,7 @@ TagManager:
   tags:
   - CinemachineTarget
   - HitRange
+  - WaveHandler
   layers:
   - Default
   - TransparentFX

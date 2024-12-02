@@ -23,7 +23,7 @@ public class WaveHandler : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        waveNo = 0;
+        waveNo = 0.0f;
         WaveChange();
 
         Enemy.OnEnemyDeath += OnEnemyDeath;
@@ -64,9 +64,15 @@ public class WaveHandler : MonoBehaviour
         }
         waveNo++;
         enemyCount = waveNo * (waveNo + 2) + 2;
+        //Debug.Log(waveNo);
 
         Invoke("SpawnDelay", 8.0f);
+    }
 
+    public float WaveGetter()
+    {
+        Debug.Log(waveNo);
+        return waveNo;
     }
 
 
