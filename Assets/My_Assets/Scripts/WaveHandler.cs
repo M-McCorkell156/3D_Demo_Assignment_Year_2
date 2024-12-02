@@ -7,6 +7,7 @@ public class WaveHandler : MonoBehaviour
 
     private float waveNo;
     public float enemyCount;
+    [SerializeField] private float introDelay;
 
     public List<Transform> spawnPos;
     public GameObject enemyPrefab;
@@ -66,12 +67,12 @@ public class WaveHandler : MonoBehaviour
         enemyCount = waveNo * (waveNo + 2) + 2;
         //Debug.Log(waveNo);
 
-        Invoke("SpawnDelay", 8.0f);
+        Invoke("SpawnDelay", introDelay);
     }
 
     public float WaveGetter()
     {
-        Debug.Log(waveNo);
+        //Debug.Log(waveNo);
         return waveNo;
     }
 

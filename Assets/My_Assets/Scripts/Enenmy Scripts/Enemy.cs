@@ -40,19 +40,29 @@ public class Enemy : MonoBehaviour, IDamagable
 
     [SerializeField] private GameObject waveHandlerObj;
     [SerializeField] private WaveHandler waveHandler;
+
+    [SerializeField] private CapsuleCollider capsuleCollider;
+
     private float waveNo = 0.0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        #region Get Wave Number
         waveHandlerObj = GameObject.FindWithTag("WaveHandler");
         waveHandler = waveHandlerObj.GetComponent<WaveHandler>();
 
         waveNo = waveHandler.WaveGetter();
         //Debug.Log(waveNo);
-        myHealth = 90.0f + (waveNo * 10.0f);
+        #endregion
 
+        #region Health
+        myHealth = 90.0f + (waveNo * 10.0f);
         //Debug.Log(myHealth);
+        #endregion
+
+        capsuleCollider = this.GetComponent<CapsuleCollider>();
+        capsuleCollider.enabled = true;
 
         playerObj = GameObject.FindGameObjectWithTag("Player");
         agent = GetComponent<NavMeshAgent>();
@@ -146,6 +156,8 @@ public class Enemy : MonoBehaviour, IDamagable
             //Debug.Log("Stop");
         }
     }
+
+    #region Spawning
     private void Spawning()
     {
         //Debug.Log("Spawning");
@@ -166,6 +178,7 @@ public class Enemy : MonoBehaviour, IDamagable
         NavSetup();
     }
 
+    #endregion
     private void NavSetup()
     {
         //Debug.Log("NavSetup");
@@ -188,6 +201,7 @@ public class Enemy : MonoBehaviour, IDamagable
     //When an enemy dies delete self and send event
     public void Death()
     {
+        capsuleCollider.enabled = false;
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
         isDead = true;
