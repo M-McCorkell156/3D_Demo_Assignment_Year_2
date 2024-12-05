@@ -5,12 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class Player_Behaviour : MonoBehaviour, IDamagable
 {
-    [SerializeField] private float myHealth = 100f;
-    private float maxHealth = 100f; 
-    [SerializeField] private float healthRegenLength = 2f;
+    [SerializeField] private float myHealth;
+    private float maxHealth = 100f;
+    [SerializeField] private float healthRegenLength;
+    [SerializeField] private float healthRegenAmount;
     [SerializeField] private float enemyDamage = 30f;
-    [SerializeField] private bool isRegen;
-    [SerializeField] private float healthRegenAmount = 10f;
+    private bool isRegen;
+
+    [SerializeField] private GameObject UI;
+    private UIHandler UIHandler;
 
 
     public Attack Attack;
@@ -18,7 +21,11 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
     // Start is called before the first frame update
     void Start()
     {
+        enemyDamage = 30f;
+        myHealth = 100f;
+        //Debug.Log(myHealth);
         Attack.OnPlayerAttack += TakeDamage;
+        UIHandler = UI.GetComponent<UIHandler>();
     }
 
     // Update is called once per frame
@@ -33,7 +40,7 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
         */
         if (myHealth != maxHealth & !isRegen)
         {
-           StartCoroutine(Regen());
+            StartCoroutine(Regen());
         }
     }
 
@@ -42,21 +49,28 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
         isRegen = true;
         while (myHealth < maxHealth)
         {
-            myHealth += healthRegenAmount;
             yield return new WaitForSeconds(healthRegenLength);
+            myHealth += healthRegenAmount;
+            HealthChange();
         }
         isRegen = false;
     }
+
+    public void HealthChange()
+    {
+        UIHandler.OnHealthChange(myHealth);
+        //Debug.Log($"health change to {myHealth}");
+    }
     public void TakeDamage()
     {
-
-        Damage(enemyDamage);
+        Damage();
     }
 
-    public void Damage(float damage)
+    public void Damage()
     {
         //Debug.Log($"player took damage : {damage}");
-        myHealth -= damage;
+        myHealth -= enemyDamage;
+        HealthChange();
         //Debug.Log($"player health remaining : {myHealth}");
 
         if (myHealth <= 0)

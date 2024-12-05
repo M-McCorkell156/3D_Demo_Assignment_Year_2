@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class UIHandler : MonoBehaviour
 {
     public TextMeshProUGUI waveCounter;
-
+    public Image HeartBar;
     private int counter;
 
     //public WaveHandler WaveHandler;
@@ -24,5 +24,11 @@ public class UIHandler : MonoBehaviour
     {
         counter++; 
         waveCounter.text = counter.ToString();
+    }
+
+    public void OnHealthChange(float health)
+    {
+        //Debug.Log($"ui chnage to {health}");
+        HeartBar.fillAmount = health/100f;
     }
 }

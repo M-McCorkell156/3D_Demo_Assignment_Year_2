@@ -19,8 +19,8 @@ public class Enemy : MonoBehaviour, IDamagable
 
     int[] numbers = { 1, 2, 3 };
 
-    private float myHealth = 100f;
-    private float playerDamage = 20f;
+    private float myHealth;
+    private float playerDamage = 100f;
 
     [SerializeField] private float hitRange;
 
@@ -43,6 +43,8 @@ public class Enemy : MonoBehaviour, IDamagable
 
     [SerializeField] private CapsuleCollider capsuleCollider;
 
+    [SerializeField] private float attackDelayAmount;
+
     private float waveNo = 0.0f;
 
     // Start is called before the first frame update
@@ -57,8 +59,8 @@ public class Enemy : MonoBehaviour, IDamagable
         #endregion
 
         #region Health
-        myHealth = 90.0f + (waveNo * 10.0f);
-        //Debug.Log(myHealth);
+        myHealth = 50.0f + (waveNo * 50);
+        Debug.Log(myHealth);
         #endregion
 
         capsuleCollider = this.GetComponent<CapsuleCollider>();
@@ -150,7 +152,7 @@ public class Enemy : MonoBehaviour, IDamagable
         else if (!isDead && !isSpawning)
         {
             //Debug.Log("Delay");
-            Invoke("AttackDelay", 2f);
+            Invoke("AttackDelay", attackDelayAmount);
             agent.isStopped = true;
             agent.velocity = Vector3.zero;
             //Debug.Log("Stop");
@@ -168,11 +170,11 @@ public class Enemy : MonoBehaviour, IDamagable
     }
     private IEnumerator SpawnRiseTime()
     {
-        while (this.gameObject.transform.position.y < 1)
+        while (this.gameObject.transform.position.y < playerObj.transform.position.y)
         {
             //Debug.Log("Rise Start");
             yield return new WaitForSeconds(0.008f);
-            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, 1, transform.position.z), 0.008f);
+            transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, 145.3f, transform.position.z), 0.008f);
         }
         //Debug.Log("Done");
         NavSetup();
@@ -202,8 +204,13 @@ public class Enemy : MonoBehaviour, IDamagable
     public void Death()
     {
         capsuleCollider.enabled = false;
-        agent.isStopped = true;
-        agent.velocity = Vector3.zero;
+
+        if (!isSpawning)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+        }
+
         isDead = true;
         //Debug.Log("1 enemy death");
         StartCoroutine(DissolveDeath());
@@ -238,11 +245,11 @@ public class Enemy : MonoBehaviour, IDamagable
     #endregion
 
     #region Damage
-    public void Damage(float damage)
+    public void Damage()
     {
-        //Debug.Log($"enemy took damage : {damage}");
+        Debug.Log($"enemy took damage : {playerDamage}");
 
-        myHealth -= damage;
+        myHealth -= playerDamage;
 
         //Debug.Log($"enemy health remaining : {myHealth}");
 

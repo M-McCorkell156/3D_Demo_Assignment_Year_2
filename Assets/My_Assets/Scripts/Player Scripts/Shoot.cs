@@ -41,7 +41,7 @@ public class Shoot : MonoBehaviour
             Enemy target = hit.transform.GetComponent<Enemy>();
             if (target != null)
             {
-                target.Damage(gunDamage);
+                target.Damage();
             }
         }
     }
@@ -50,7 +50,7 @@ public class Shoot : MonoBehaviour
     {
         //Debug.Log("OnGunShot");
         gunShotEFX.SetActive(true);
-        Invoke("OnDisableGunshot", 0.1f);
+        Invoke("OnDisableGunshot", 0.05f);
     }
     private void OnDisableGunshot()
     {
