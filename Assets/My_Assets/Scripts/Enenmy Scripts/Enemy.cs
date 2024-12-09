@@ -17,8 +17,6 @@ public class Enemy : MonoBehaviour, IDamagable
     public delegate void EventHandler();
     public static event EventHandler OnEnemyDeath;
 
-    int[] numbers = { 1, 2, 3 };
-
     private float myHealth;
     private float playerDamage = 100f;
 
@@ -60,7 +58,7 @@ public class Enemy : MonoBehaviour, IDamagable
 
         #region Health
         myHealth = 50.0f + (waveNo * 50);
-        Debug.Log(myHealth);
+        //Debug.Log(myHealth);
         #endregion
 
         capsuleCollider = this.GetComponent<CapsuleCollider>();
@@ -177,16 +175,41 @@ public class Enemy : MonoBehaviour, IDamagable
             transform.position = Vector3.MoveTowards(transform.position, new Vector3(transform.position.x, 145.3f, transform.position.z), 0.008f);
         }
         //Debug.Log("Done");
+
+        if(!isDead)
         NavSetup();
     }
 
     #endregion
     private void NavSetup()
     {
-        //Debug.Log("NavSetup");
-        agent = GetComponent<NavMeshAgent>();
         agent.enabled = true;
+        switch (waveNo)
+        {
+            case > 0 and <= 3:
+                //Debug.Log("Easy waves");
+                agent.speed = 1f;
+                agent.acceleration = 1f;
+                break;
+            case > 3 and <= 6:
+                //Debug.Log("Medium waves");
+                agent.speed = 2f;
+                agent.acceleration = 1.5f;
+                break;
+            case > 6:
+                //Debug.Log("Hard waves");
+                agent.speed = 3f;
+                agent.acceleration = 2f;
+                break;
+            default:
+                Debug.Log("Error waveNo null");
+                break;
+        }
+
+        //Debug.Log("NavSetup");
         isSpawning = false;
+
+        Debug.Log($"WaveHanlder Display: \n Enemy Health : {myHealth} \n Enemy speed : {agent.speed}\n Enemy acc : {agent.acceleration}");
     }
     private void AttackDelay()
     {
@@ -247,7 +270,7 @@ public class Enemy : MonoBehaviour, IDamagable
     #region Damage
     public void Damage()
     {
-        Debug.Log($"enemy took damage : {playerDamage}");
+        //Debug.Log($"enemy took damage : {playerDamage}");
 
         myHealth -= playerDamage;
 

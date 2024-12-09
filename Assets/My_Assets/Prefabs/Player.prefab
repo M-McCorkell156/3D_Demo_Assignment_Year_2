@@ -374,9 +374,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   myHealth: 100
   healthRegenLength: 1
-  enemyDamage: 30
-  isRegen: 0
   healthRegenAmount: 10
+  enemyDamage: 30
+  UI: {fileID: 0}
   Attack: {fileID: 0}
 --- !u!114 &4523075506016181860
 MonoBehaviour:
@@ -1178,7 +1178,7 @@ Transform:
   m_GameObject: {fileID: 2341630889331187599}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.000000059604645, y: 1.5279999, z: -0.5840001}
+  m_LocalPosition: {x: 0, y: 1.5279999, z: -0.5839844}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1371,7 +1371,7 @@ Transform:
   m_GameObject: {fileID: 5938259324334254295}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.000000059604645, y: 1.5279999, z: -0.5840001}
+  m_LocalPosition: {x: 0, y: 1.5279999, z: -0.5839844}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1514,6 +1514,79 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &5959892622627107459
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4227231945238070481}
+  - component: {fileID: 3782819553454120752}
+  - component: {fileID: 3063771727836769311}
+  m_Layer: 0
+  m_Name: TakeDamaageSFX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4227231945238070481
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959892622627107459}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4363620627447891194}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3782819553454120752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959892622627107459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b675a75333cdca84b8f0b419d0080d84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  eventName: Damage Taken
+  sfxName:
+  - PlayerHurt
+  playOnEnabled: 0
+  attachSoundToTransform: 0
+  volume: 1
+  pitch: 1
+  randomisePitch: 1
+  pitchRange: 0.1
+  spatialBlend: 0.5
+  randomiseDelay: 0
+  eventDelay: 0
+  percentageChanceToPlay: 100
+  collisionType: 2
+  targetTag: Player
+  testMode: 0
+--- !u!114 &3063771727836769311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5959892622627107459}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1df987df34c41fb41beb8b1fbfdff5c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6679602599704279429
 GameObject:
   m_ObjectHideFlags: 0
@@ -1579,6 +1652,7 @@ Transform:
   - {fileID: 8871894977478126504}
   - {fileID: 5426226244652259265}
   - {fileID: 7269528792844252019}
+  - {fileID: 4227231945238070481}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!1001 &8492865558822734890

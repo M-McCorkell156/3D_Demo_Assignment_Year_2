@@ -29,7 +29,7 @@ public class Attack : MonoBehaviour
 
         if (other.tag == "Player")
         {
-            Debug.Log("hit player");
+            //Debug.Log("hit player");
             AttackPlayer();
         }
 

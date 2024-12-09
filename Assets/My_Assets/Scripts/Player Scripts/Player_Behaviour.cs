@@ -18,6 +18,11 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
 
     public Attack Attack;
 
+    public delegate void EventHandler();
+    public static event EventHandler OnPlayerHurt;
+    public static event EventHandler OnDeath;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -72,6 +77,10 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
         myHealth -= enemyDamage;
         HealthChange();
         //Debug.Log($"player health remaining : {myHealth}");
+        if (OnPlayerHurt != null)
+        {
+            OnPlayerHurt();
+        }
 
         if (myHealth <= 0)
         {
@@ -81,8 +90,9 @@ public class Player_Behaviour : MonoBehaviour, IDamagable
 
     public void Death()
     {
-        //Debug.Log("player dead");
-        Scene currentScene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(currentScene.name);
+        if ((OnDeath != null))
+        {
+            OnDeath();
+        }
     }
 }

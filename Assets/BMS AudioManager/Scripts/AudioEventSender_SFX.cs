@@ -53,7 +53,7 @@ public class AudioEventSender_SFX : MonoBehaviour, IAudioEventSender
     [Space(20)]
     [Header("TestMode : 'T' to play sound effect")]
     public bool testMode = false;
-    
+
     private void OnEnable(){
         if (playOnEnabled)
         {   

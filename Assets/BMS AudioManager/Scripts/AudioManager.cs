@@ -27,19 +27,19 @@ public class AudioManager : MonoBehaviour
     private AudioSource currentMusicSource;
     private AudioSource nextMusicSource;
 
-    
+
     [Header("Ambient Audio Settings")]
     public GameObject ambientAudioPrefab;
     private float ambientFadeDuration = 1.5f;
     private FadeType ambientFadeType = FadeType.Crossfade;
     public bool isFadingAmbientAudio = false; // Flag to prevent multiple fades at once
     private bool isPausedAmbientAudio = false; // Tracks if the ambient audio is paused
-    
+
     private Dictionary<int, AudioClip> ambientAudioTracks = new Dictionary<int, AudioClip>();
     private AudioSource currentAmbientAudioSource;
     private AudioSource nextAmbientAudioSource;
-    
-    
+
+
     [Header("Sound Effects Settings")]
     public GameObject soundEffectPrefab;
     private Dictionary<string, AudioClip> soundEffects = new Dictionary<string, AudioClip>();
@@ -47,7 +47,7 @@ public class AudioManager : MonoBehaviour
     // --------------------------------------------------------------------------------------------
     [Header("Available Music Tracks")]
     [SerializeField] private List<string> musicTrackNames = new List<string>();
-    
+
     [Header("Available Ambient Audio Tracks")]
     [SerializeField] private List<string> ambientAudioTrackNames = new List<string>();
 
@@ -55,7 +55,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private List<string> soundEffectNames = new List<string>();
 
     // --------------------------------------------------------------------------------------------
-    
+
     private void Awake()
     {
         if (Instance == null)
@@ -77,11 +77,11 @@ public class AudioManager : MonoBehaviour
         AudioEventManager.PlayBGM += PlayMusic;
         AudioEventManager.StopBGM += StopMusic;
         AudioEventManager.PauseBGM += PauseMusic;
-        
+
         AudioEventManager.PlayAmbientAudio += PlayAmbientAudio;
         AudioEventManager.StopAmbientAudio += StopAmbientAudio;
         AudioEventManager.PauseAmbientAudio += PauseAmbientAudio;
-        
+
         AudioEventManager.PlaySFX += PlaySoundEffect;
     }
 
@@ -90,16 +90,16 @@ public class AudioManager : MonoBehaviour
         AudioEventManager.PlayBGM -= PlayMusic;
         AudioEventManager.StopBGM -= StopMusic;
         AudioEventManager.PauseBGM -= PauseMusic;
-        
+
         AudioEventManager.PlayAmbientAudio -= PlayAmbientAudio;
         AudioEventManager.StopAmbientAudio -= StopAmbientAudio;
         AudioEventManager.PauseAmbientAudio -= PauseAmbientAudio;
-        
+
         AudioEventManager.PlaySFX -= PlaySoundEffect;
     }
-    #endregion 
+    #endregion
     // --------------------------------------------------------------------------------------------
-    
+
     // --------------------------------------------------------------------------------------------
     #region Load Audio Resources ------------------------------------
     private void LoadAudioResources()
@@ -110,7 +110,7 @@ public class AudioManager : MonoBehaviour
             musicTracks[i] = bgmClips[i];
             musicTrackNames.Add(bgmClips[i].name);
         }
-        
+
         AudioClip[] ambientClips = Resources.LoadAll<AudioClip>("Audio/Ambience-Music");
         for (int i = 0; i < ambientClips.Length; i++)
         {
@@ -131,7 +131,7 @@ public class AudioManager : MonoBehaviour
 
     // --------------------------------------------------------------------------------------------
     #region Play Background Music ------------------------------------
-    
+
     // Event Method - Play background music by track number or name with optional volume and loop settings - calls appropriate overload based on parameters
     public void PlayMusic(int trackNumber, string trackName, float volume, FadeType fadeType, float fadeDuration, bool loop, string eventName)
     {
@@ -139,7 +139,7 @@ public class AudioManager : MonoBehaviour
 
         musicFadeType = fadeType;
         musicFadeDuration = fadeDuration;
-        
+
         if (string.IsNullOrEmpty(trackName) && trackNumber >= 0)
         {
             PlayMusic(trackNumber, volume, loop);
@@ -250,13 +250,13 @@ public class AudioManager : MonoBehaviour
     }
     #endregion
     // --------------------------------------------------------------------------------------------
-    
+
     // --------------------------------------------------------------------------------------------
     #region StopBackgroundMusic ------------------------------------
     public void StopMusic(float fadeDuration)
     {
         musicFadeDuration = fadeDuration;
-        
+
         // Check if there's music playing and that it's not already fading
         if (currentMusicSource != null && currentMusicSource.isPlaying && !isFadingMusic)
         {
@@ -293,7 +293,7 @@ public class AudioManager : MonoBehaviour
         if (isFadingMusic) return;
 
         musicFadeDuration = fadeDuration; // Set the fade duration for pausing
-        
+
         // Toggle pause state
         if (isPausedMusic)
         {
@@ -340,11 +340,11 @@ public class AudioManager : MonoBehaviour
 
     #endregion
     // --------------------------------------------------------------------------------------------
-    
-    
+
+
     // --------------------------------------------------------------------------------------------
     #region PlayAmbientAudio ------------------------------------
-    
+
     // Event Method - Play ambient by track number or name with optional volume and loop settings - calls appropriate overload based on parameters
     public void PlayAmbientAudio(Transform attachTo, int trackNumber, string trackName, float volume, float pitch, float spatialBlend, FadeType fadeType, float fadeDuration, bool loop, string eventName)
     {
@@ -402,94 +402,94 @@ public class AudioManager : MonoBehaviour
         Debug.LogWarning($"Ambient audio track '{trackName}' not found in Resources/Audio/Ambient!");
     }
 
-private IEnumerator CrossfadeAmbientAudio(Transform attachTo, AudioClip newTrack, float targetVolume, float targetPitch, float targetSpatialBlend, bool loop)
-{
-    float crossfadeDuration = ambientFadeDuration;
-
-    if (attachTo == null)
+    private IEnumerator CrossfadeAmbientAudio(Transform attachTo, AudioClip newTrack, float targetVolume, float targetPitch, float targetSpatialBlend, bool loop)
     {
-        attachTo = transform; // Default to AudioManager's transform if attachTo is null
-    }
+        float crossfadeDuration = ambientFadeDuration;
 
-    GameObject ambientObject = Instantiate(ambientAudioPrefab, attachTo.position, Quaternion.identity, attachTo);
-    nextAmbientAudioSource = ambientObject.GetComponent<AudioSource>();
-    nextAmbientAudioSource.clip = newTrack;
-    nextAmbientAudioSource.volume = 0;  // Start volume at 0 for crossfade
-    nextAmbientAudioSource.pitch = targetPitch;
-    nextAmbientAudioSource.spatialBlend = targetSpatialBlend;
-    nextAmbientAudioSource.loop = loop;
-    nextAmbientAudioSource.Play();
-
-    if (currentAmbientAudioSource != null && currentAmbientAudioSource.isPlaying)
-    {
-        float startVolume = currentAmbientAudioSource.volume;
-        float startPitch = currentAmbientAudioSource.pitch;
-        float startSpatialBlend = currentAmbientAudioSource.spatialBlend;
-        for (float t = 0; t < crossfadeDuration; t += Time.deltaTime)
+        if (attachTo == null)
         {
-            currentAmbientAudioSource.volume = Mathf.Lerp(startVolume, 0, t / crossfadeDuration);
-            nextAmbientAudioSource.volume = Mathf.Lerp(0, targetVolume, t / crossfadeDuration);
-            nextAmbientAudioSource.pitch = Mathf.Lerp(startPitch, targetPitch, t / crossfadeDuration);
-            nextAmbientAudioSource.spatialBlend = Mathf.Lerp(startSpatialBlend, targetSpatialBlend, t / crossfadeDuration);
-            yield return null;
+            attachTo = transform; // Default to AudioManager's transform if attachTo is null
         }
-        Destroy(currentAmbientAudioSource.gameObject); // Clean up old AudioSource after crossfade
+
+        GameObject ambientObject = Instantiate(ambientAudioPrefab, attachTo.position, Quaternion.identity, attachTo);
+        nextAmbientAudioSource = ambientObject.GetComponent<AudioSource>();
+        nextAmbientAudioSource.clip = newTrack;
+        nextAmbientAudioSource.volume = 0;  // Start volume at 0 for crossfade
+        nextAmbientAudioSource.pitch = targetPitch;
+        nextAmbientAudioSource.spatialBlend = targetSpatialBlend;
+        nextAmbientAudioSource.loop = loop;
+        nextAmbientAudioSource.Play();
+
+        if (currentAmbientAudioSource != null && currentAmbientAudioSource.isPlaying)
+        {
+            float startVolume = currentAmbientAudioSource.volume;
+            float startPitch = currentAmbientAudioSource.pitch;
+            float startSpatialBlend = currentAmbientAudioSource.spatialBlend;
+            for (float t = 0; t < crossfadeDuration; t += Time.deltaTime)
+            {
+                currentAmbientAudioSource.volume = Mathf.Lerp(startVolume, 0, t / crossfadeDuration);
+                nextAmbientAudioSource.volume = Mathf.Lerp(0, targetVolume, t / crossfadeDuration);
+                nextAmbientAudioSource.pitch = Mathf.Lerp(startPitch, targetPitch, t / crossfadeDuration);
+                nextAmbientAudioSource.spatialBlend = Mathf.Lerp(startSpatialBlend, targetSpatialBlend, t / crossfadeDuration);
+                yield return null;
+            }
+            Destroy(currentAmbientAudioSource.gameObject); // Clean up old AudioSource after crossfade
+        }
+
+        nextAmbientAudioSource.volume = targetVolume;
+        currentAmbientAudioSource = nextAmbientAudioSource;
+        isFadingAmbientAudio = false; // Reset flag after crossfade completes
     }
 
-    nextAmbientAudioSource.volume = targetVolume;
-    currentAmbientAudioSource = nextAmbientAudioSource;
-    isFadingAmbientAudio = false; // Reset flag after crossfade completes
-}
-
-private IEnumerator FadeOutAndInAmbientAudio(Transform attachTo, AudioClip newTrack, float targetVolume, float targetPitch, float targetSpatialBlend, bool loop)
-{
-    if (attachTo == null)
+    private IEnumerator FadeOutAndInAmbientAudio(Transform attachTo, AudioClip newTrack, float targetVolume, float targetPitch, float targetSpatialBlend, bool loop)
     {
-        attachTo = transform; // Default to AudioManager's transform if attachTo is null
-    }
+        if (attachTo == null)
+        {
+            attachTo = transform; // Default to AudioManager's transform if attachTo is null
+        }
 
-    if (currentAmbientAudioSource != null && currentAmbientAudioSource.isPlaying)
-    {
-        float startVolume = currentAmbientAudioSource.volume;
+        if (currentAmbientAudioSource != null && currentAmbientAudioSource.isPlaying)
+        {
+            float startVolume = currentAmbientAudioSource.volume;
+            for (float t = 0; t < ambientFadeDuration; t += Time.deltaTime)
+            {
+                currentAmbientAudioSource.volume = Mathf.Lerp(startVolume, 0, t / ambientFadeDuration);
+                yield return null;
+            }
+            currentAmbientAudioSource.Stop();
+            Destroy(currentAmbientAudioSource.gameObject); // Clean up old AudioSource after fade out
+        }
+
+        GameObject ambientObject = Instantiate(ambientAudioPrefab, attachTo.position, Quaternion.identity, attachTo);
+        nextAmbientAudioSource = ambientObject.GetComponent<AudioSource>();
+        nextAmbientAudioSource.clip = newTrack;
+        nextAmbientAudioSource.volume = 0;
+        nextAmbientAudioSource.pitch = targetPitch;
+        nextAmbientAudioSource.spatialBlend = targetSpatialBlend;
+        nextAmbientAudioSource.loop = loop;
+        nextAmbientAudioSource.Play();
+
         for (float t = 0; t < ambientFadeDuration; t += Time.deltaTime)
         {
-            currentAmbientAudioSource.volume = Mathf.Lerp(startVolume, 0, t / ambientFadeDuration);
+            nextAmbientAudioSource.volume = Mathf.Lerp(0, targetVolume, t / ambientFadeDuration);
+            nextAmbientAudioSource.pitch = Mathf.Lerp(0, targetPitch, t / ambientFadeDuration);
+            nextAmbientAudioSource.spatialBlend = Mathf.Lerp(0, targetSpatialBlend, t / ambientFadeDuration);
             yield return null;
         }
-        currentAmbientAudioSource.Stop();
-        Destroy(currentAmbientAudioSource.gameObject); // Clean up old AudioSource after fade out
+
+        nextAmbientAudioSource.volume = targetVolume;
+        currentAmbientAudioSource = nextAmbientAudioSource;
+        isFadingAmbientAudio = false; // Reset flag after fade completes
     }
-
-    GameObject ambientObject = Instantiate(ambientAudioPrefab, attachTo.position, Quaternion.identity, attachTo);
-    nextAmbientAudioSource = ambientObject.GetComponent<AudioSource>();
-    nextAmbientAudioSource.clip = newTrack;
-    nextAmbientAudioSource.volume = 0;
-    nextAmbientAudioSource.pitch = targetPitch;
-    nextAmbientAudioSource.spatialBlend = targetSpatialBlend;
-    nextAmbientAudioSource.loop = loop;
-    nextAmbientAudioSource.Play();
-
-    for (float t = 0; t < ambientFadeDuration; t += Time.deltaTime)
-    {
-        nextAmbientAudioSource.volume = Mathf.Lerp(0, targetVolume, t / ambientFadeDuration);
-        nextAmbientAudioSource.pitch = Mathf.Lerp(0, targetPitch, t / ambientFadeDuration);
-        nextAmbientAudioSource.spatialBlend = Mathf.Lerp(0, targetSpatialBlend, t / ambientFadeDuration);
-        yield return null;
-    }
-
-    nextAmbientAudioSource.volume = targetVolume;
-    currentAmbientAudioSource = nextAmbientAudioSource;
-    isFadingAmbientAudio = false; // Reset flag after fade completes
-}
     #endregion
     // --------------------------------------------------------------------------------------------
-    
+
     // --------------------------------------------------------------------------------------------
     #region StopAmbientAudio ------------------------------------
     public void StopAmbientAudio(float fadeDuration)
     {
         ambientFadeDuration = fadeDuration;
-    
+
         // Check if there's ambient audio playing and that it's not already fading
         if (currentAmbientAudioSource != null && currentAmbientAudioSource.isPlaying && !isFadingAmbientAudio)
         {
@@ -517,7 +517,7 @@ private IEnumerator FadeOutAndInAmbientAudio(Transform attachTo, AudioClip newTr
     }
     #endregion
     // --------------------------------------------------------------------------------------------
-    
+
     // --------------------------------------------------------------------------------------------
     #region PauseAmbientAudio ------------------------------------
     public void PauseAmbientAudio(float fadeDuration)
@@ -526,7 +526,7 @@ private IEnumerator FadeOutAndInAmbientAudio(Transform attachTo, AudioClip newTr
         if (isFadingAmbientAudio) return;
 
         ambientFadeDuration = fadeDuration; // Set the fade duration for pausing
-    
+
         // Toggle pause state
         if (isPausedAmbientAudio)
         {
@@ -574,8 +574,8 @@ private IEnumerator FadeOutAndInAmbientAudio(Transform attachTo, AudioClip newTr
     }
     #endregion
     // --------------------------------------------------------------------------------------------
-    
-    
+
+
     // --------------------------------------------------------------------------------------------
     #region PlaySoundEffects ------------------------------------
     public void PlaySoundEffect(Transform attachTo, string soundName, float volume, float pitch, bool randomizePitch, float pitchRange, float spatialBlend, string eventName)
@@ -586,14 +586,14 @@ private IEnumerator FadeOutAndInAmbientAudio(Transform attachTo, AudioClip newTr
             Debug.LogWarning($"Sound '{soundName}' not found in Resources/Audio/SFX!");
             return;
         }
-        
+
         // If no transform is provided, play the sound at the AudioManager's position with no spatial blend
-        if(attachTo == null)
+        if (attachTo == null)
         {
             attachTo = transform;
             spatialBlend = 0;
         }
-        
+
         // Create a new GameObject to play the sound effect 
         GameObject sfxObject = Instantiate(soundEffectPrefab, attachTo.position, Quaternion.identity, attachTo);
         AudioSource sfxSource = sfxObject.GetComponent<AudioSource>();
